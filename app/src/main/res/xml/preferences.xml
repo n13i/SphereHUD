@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="stop_overlay_service"
+        android:summary="Stop the service drawing HUD."
+        android:title="Stop overlay service" />
+    <Preference
+        android:key="set_offset"
+        android:summary="Set the offset of pitch/roll to current pitch/roll."
+        android:title="Set offset" />
+    <Preference
+        android:key="reset_offset"
+        android:summary="Reset the offset of pitch/roll."
+        android:title="Reset offset" />
+    <SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="launch_settings"
+        android:summary="Launch this settings while SphereHUD service running."
+        android:title="Launch settings" />
+</PreferenceScreen>
