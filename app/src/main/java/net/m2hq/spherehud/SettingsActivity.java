@@ -17,16 +17,21 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     @Override
     public void onFragmentInteraction(int id)
     {
+        Intent intent;
         switch(id)
         {
             case SettingsFragment.STOP_OVERLAY_SERVICE:
-                Intent intent = new Intent(SettingsActivity.this, HUDOverlayService.class);
+                intent = new Intent(SettingsActivity.this, HUDOverlayService.class);
                 stopService(intent);
                 break;
+            case SettingsFragment.SHOW_LICENSE:
+                intent = new Intent(SettingsActivity.this, LicenseActivity.class);
+                startActivity(intent);
+                break;
             default:
-                Intent messageIntent = new Intent("PreferenceChangedEvent");
-                messageIntent.putExtra("Message", id);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+                intent = new Intent("PreferenceChangedEvent");
+                intent.putExtra("Message", id);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                 break;
         }
     }

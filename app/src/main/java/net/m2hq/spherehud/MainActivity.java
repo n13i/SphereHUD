@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
+import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -24,40 +26,37 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean isOverlayMode = sharedPreferences.getBoolean("overlay_mode", false);
+
+        if((!canDrawOverlays() && isOverlayMode) || !canAccessFineLocation())
+        {
+            setTheme(R.style.AppTheme);
+            setContentView(R.layout.activity_main);
+
+            findViewById(R.id.request_permission_button).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    requestPermissions(isOverlayMode);
+                }
+            });
+            return;
+        }
 
         if(isServiceRunning())
         {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
             if(sharedPreferences.getBoolean("launch_settings", true))
             {
                 startSettings();
             }
             finish();
+            return;
         }
 
-        boolean isPermitted = true;
-
-        if(!canDrawOverlays())
-        {
-            Uri uri = Uri.parse("package:" + getPackageName());
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri);
-            startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
-            isPermitted = false;
-        }
-
-        if (!canAccessFineLocation())
-        {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, REQUEST_ACCESS_FINE_LOCATION);
-            isPermitted = false;
-        }
-
-        if(isPermitted)
-        {
-            startService();
-        }
-
+        startHUD();
         finish();
     }
 
@@ -67,7 +66,10 @@ public class MainActivity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(REQUEST_ACCESS_FINE_LOCATION == requestCode)
         {
-            startService();
+            if(startHUD())
+            {
+                finish();
+            }
         }
     }
 
@@ -77,9 +79,9 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if(REQUEST_OVERLAY_PERMISSION == requestCode)
         {
-            if(canDrawOverlays())
+            if(startHUD())
             {
-               startService();
+                finish();
             }
         }
     }
@@ -100,6 +102,46 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
+    }
+
+    private void requestPermissions(boolean requestOverlay)
+    {
+        if(!canDrawOverlays() && requestOverlay)
+        {
+            Uri uri = Uri.parse("package:" + getPackageName());
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri);
+            startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
+        }
+
+        if (!canAccessFineLocation())
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private boolean startHUD()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean isOverlayMode = sharedPreferences.getBoolean("overlay_mode", false);
+
+        if(canAccessFineLocation())
+        {
+            if(isOverlayMode)
+            {
+                if(canDrawOverlays())
+                {
+                    startService();
+                    return true;
+                }
+            }
+            else
+            {
+                startActivity(new Intent(getApplication(), HUDActivity.class));
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void startService()

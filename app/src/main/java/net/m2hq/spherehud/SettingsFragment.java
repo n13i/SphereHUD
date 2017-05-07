@@ -5,15 +5,12 @@ import android.os.Bundle;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
-/**
- * Created by n13i on 2017/04/20.
- */
-
 public class SettingsFragment extends PreferenceFragmentCompat
 {
     public static final int STOP_OVERLAY_SERVICE = 1;
     public static final int SET_OFFSET = 2;
     public static final int RESET_OFFSET = 3;
+    public static final int SHOW_LICENSE = 4;
 
     private OnFragmentInteractionListener listener;
 
@@ -61,6 +58,18 @@ public class SettingsFragment extends PreferenceFragmentCompat
         findPreference("stop_overlay_service").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 listener.onFragmentInteraction(STOP_OVERLAY_SERVICE);
+                return true;
+            }
+        });
+
+        Preference aboutPreference = findPreference("about");
+        aboutPreference.setTitle(getString(R.string.app_name) + " Version " + BuildConfig.VERSION_NAME);
+        aboutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener()
+        {
+            @Override
+            public boolean onPreferenceClick(Preference preference)
+            {
+                listener.onFragmentInteraction(SHOW_LICENSE);
                 return true;
             }
         });

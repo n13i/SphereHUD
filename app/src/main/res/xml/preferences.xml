@@ -1,20 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <Preference
-        android:key="stop_overlay_service"
-        android:summary="Stop the service drawing HUD."
-        android:title="Stop overlay service" />
-    <Preference
-        android:key="set_offset"
-        android:summary="Set the offset of pitch/roll to current pitch/roll."
-        android:title="Set offset" />
-    <Preference
-        android:key="reset_offset"
-        android:summary="Reset the offset of pitch/roll."
-        android:title="Reset offset" />
-    <SwitchPreferenceCompat
-        android:defaultValue="true"
-        android:key="launch_settings"
-        android:summary="Launch this settings while SphereHUD service running."
-        android:title="Launch settings" />
+
+    <PreferenceCategory android:title="@string/category_start_stop" >
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="overlay_mode"
+            android:summary="@string/overlay_mode_summary"
+            android:title="@string/overlay_mode_title" />
+        <Preference
+            android:key="stop_overlay_service"
+            android:summary="@string/stop_overlay_service_summary"
+            android:title="@string/stop_overlay_service_title" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="launch_settings"
+            android:summary="@string/launch_settings_summary"
+            android:title="@string/launch_settings_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/category_compass" >
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="flip_vertical"
+            android:summary="@string/flip_vertical_summary"
+            android:title="@string/flip_vertical_title" />
+        <Preference
+            android:key="set_offset"
+            android:summary="@string/set_offset_summary"
+            android:title="@string/set_offset_title" />
+        <Preference
+            android:key="reset_offset"
+            android:summary="@string/reset_offset_summary"
+            android:title="@string/reset_offset_title" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="use_bearing"
+            android:summary="@string/use_bearing_summary"
+            android:title="@string/use_bearing_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/about" >
+        <Preference
+            android:key="about"
+            android:summary="@string/about_summary"
+            android:title="SphereHUD Version X.X" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

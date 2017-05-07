@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">このアプリについて</string>
+    <string name="stop_overlay_service_summary">HUD描画サービスを停止します。</string>
+    <string name="stop_overlay_service_title">オーバーレイ サービスを停止</string>
+    <string name="launch_settings_summary">SphereHUDサービス実行中に起動されたとき、この設定画面を表示します。</string>
+    <string name="launch_settings_title">起動時に設定を表示</string>
+    <string name="reset_offset_summary">ピッチ/ロールのゼロ点補正値をリセットします。</string>
+    <string name="reset_offset_title">ゼロ点補正値をリセット</string>
+    <string name="set_offset_title">ゼロ点補正</string>
+    <string name="set_offset_summary">ピッチ/ロールのゼロ点を現在値に設定します。</string>
+    <string name="use_bearing_title">移動方位を使用する</string>
+    <string name="use_bearing_summary">利用可能な場合は、デバイスの向きの代わりに移動方位を使用します。磁気コンパスが不正確なときに役立ちます。</string>
+    <string name="category_start_stop">起動/停止</string>
+    <string name="category_compass">コンパス</string>
+    <string name="title_activity_license">ライセンス</string>
+    <string name="about_summary">オープンソース ライセンスを表示</string>
+    <string name="request_permission">必要な権限を許可してください。</string>
+    <string name="request_permission_button">権限を要求</string>
+    <string name="menu_settings">設定</string>
+    <string name="overlay_mode_title">オーバーレイ モード</string>
+    <string name="overlay_mode_summary">HUDを他のアプリの上に描画します(サービスとして実行されます)。再起動が必要です。</string>
+    <string name="flip_vertical_title">上下反転</string>
+    <string name="flip_vertical_summary">HUDを上下反転描画します。</string>
+</resources>
