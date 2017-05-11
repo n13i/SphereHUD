@@ -158,7 +158,7 @@ public class ListenerService extends Service implements LocationListener, Sensor
             mLocationManager.addGpsStatusListener(listener);
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
-                    1000,
+                    500,
                     0,
                     this
             );
