@@ -3,17 +3,9 @@ package net.m2hq.spherehud;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -23,7 +15,7 @@ import android.view.View;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class HUDActivity extends Activity implements ServiceConnection
+public class HUDActivity extends Activity
 {
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -43,7 +35,7 @@ public class HUDActivity extends Activity implements ServiceConnection
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    private HUDView mHudView;
+    private View mView;
     private final Runnable mHidePart2Runnable = new Runnable()
     {
         @SuppressLint("InlinedApi")
@@ -55,7 +47,7 @@ public class HUDActivity extends Activity implements ServiceConnection
             // Note that some of these constants are new as of API 16 (Jelly Bean)
             // and API 19 (KitKat). It is safe to use them, as they are inlined
             // at compile-time and do nothing on earlier devices.
-            mHudView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+            mView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -105,32 +97,8 @@ public class HUDActivity extends Activity implements ServiceConnection
         }
     };
 
-    private Handler mHandler = new Handler();
-    private Runnable mUpdateViewRunnable;
-
-    private Messenger mServiceMessenger;
-    private Messenger mMyMessenger;
-
-    private static ListenerService.ListenerData mData;
-
-    private double mPrevLatitude;
-    private double mPrevLongitude;
-    private boolean mPrevLocationAvailability = false;
-
-    private static class ReplyHandler extends Handler
-    {
-        @Override
-        public void handleMessage(Message msg)
-        {
-            Bundle bundle = msg.getData();
-            mData = (ListenerService.ListenerData)bundle.getSerializable("data");
-        }
-    }
-
-    private int mSweepCount;
-
-    private static final int HUDVIEW_UPDATE_INTERVAL = 50;
-    private static final int SWEEP_DURATION = 30;
+    private HUDViewDriver mDriver;
+    private HUDView mHudView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -141,11 +109,11 @@ public class HUDActivity extends Activity implements ServiceConnection
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mHudView = (HUDView)findViewById(R.id.view2);
+        mView = findViewById(R.id.view2);
 
 
         // Set up the user interaction to manually show or hide the system UI.
-        mHudView.setOnClickListener(new View.OnClickListener()
+        mView.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -159,91 +127,10 @@ public class HUDActivity extends Activity implements ServiceConnection
         // while interacting with the UI.
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
-        mHudView.setNoiseAlpha(255);
+        mHudView = (HUDView)findViewById(R.id.view2);
 
-        mUpdateViewRunnable = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if(null != mServiceMessenger)
-                {
-                    Message msg = Message.obtain();
-                    msg.replyTo = mMyMessenger;
-                    try
-                    {
-                        mServiceMessenger.send(msg);
-                    }
-                    catch (RemoteException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-
-                if(null != mHudView && null != mData)
-                {
-                    if(mSweepCount <= SWEEP_DURATION)
-                    {
-                        float sweep = (SWEEP_DURATION - mSweepCount) / (float)SWEEP_DURATION;
-                        if(sweep < 0) { sweep = 0; }
-
-                        mHudView.setNoiseAlpha((int)(sweep * 255));
-                        mHudView.setSpeed((int)(sweep * 2777));
-                        mHudView.setSpeedDeltaPerSecond(-90);
-                        mHudView.setAltitude((int)(sweep * 99999));
-                        mHudView.setAltitudeDeltaPerSecond(-100);
-                        mHudView.setBatteryPercent((int)((1.0 - sweep) * 100));
-                        mHudView.setAccuracy(sweep * 500);
-
-                        mSweepCount++;
-                    }
-                    else
-                    {
-                        mHudView.setNoiseAlpha(0);
-                        mHudView.setBatteryPercent(mData.batteryPercent);
-
-                        mHudView.setSatellitesCount(mData.satsUsedInFixCount, mData.satsCount);
-
-                        mHudView.setSpeed((int)mData.speed);
-                        mHudView.setSpeedDeltaPerSecond(mData.speedDeltaPerSecond);
-                        mHudView.setAltitude((int)mData.altitude);
-                        mHudView.setAltitudeDeltaPerSecond(mData.altitudeDeltaPerSecond);
-                        mHudView.setAccuracy(mData.accuracy);
-                    }
-
-                    mHudView.setRoll((int)(mData.roll % 360));
-                    mHudView.setPitch((int)(mData.pitch % 360));
-                    mHudView.setYaw((int)(mData.yaw % 360));
-
-                    mHudView.setFlipVertical(mData.isFlipVertical);
-
-                    if(mData.isLocationUpdated)
-                    {
-                        float distance[] = new float[3];
-                        Location.distanceBetween(mPrevLatitude, mPrevLongitude, mData.latitude, mData.longitude, distance);
-
-                        if(distance[0] > mData.accuracy)
-                        {
-                            if (mPrevLocationAvailability && mData.isLocationAvailable)
-                            {
-                                mHudView.addPathElement(distance[0], distance[2]);
-                            }
-
-                            mPrevLatitude = mData.latitude;
-                            mPrevLongitude = mData.longitude;
-                            mPrevLocationAvailability = mData.isLocationAvailable;
-                        }
-                    }
-
-                    mHudView.invalidate();
-                }
-                mHandler.removeCallbacks(mUpdateViewRunnable);
-                mHandler.postDelayed(mUpdateViewRunnable, HUDVIEW_UPDATE_INTERVAL);
-            }
-        };
-        mHandler.postDelayed(mUpdateViewRunnable, HUDVIEW_UPDATE_INTERVAL);
-
-        bindService(new Intent(getApplication(), ListenerService.class), this, Context.BIND_AUTO_CREATE);
+        mDriver = new HUDViewDriver(this, mHudView);
+        mDriver.start();
     }
 
     @Override
@@ -255,6 +142,13 @@ public class HUDActivity extends Activity implements ServiceConnection
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        mDriver.stop();
     }
 
     private void toggle()
@@ -288,7 +182,7 @@ public class HUDActivity extends Activity implements ServiceConnection
     private void show()
     {
         // Show the system bar
-        mHudView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        mView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
@@ -305,21 +199,6 @@ public class HUDActivity extends Activity implements ServiceConnection
     {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service)
-    {
-        mServiceMessenger = new Messenger(service);
-        mMyMessenger = new Messenger(new ReplyHandler());
-
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name)
-    {
-        mServiceMessenger = null;
-        mMyMessenger = null;
     }
 
     @Override
