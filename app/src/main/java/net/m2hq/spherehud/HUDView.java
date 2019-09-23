@@ -49,6 +49,7 @@ public class HUDView extends View
     private int mNoiseAlpha;
 
     private float mSpeedDeltaPerSecond;
+    private float mSpeedDeltaPerSecondTransition;
     private double mAltitudeDeltaPerSecond;
 
     private float mSpeedGauge = 0;
@@ -496,7 +497,7 @@ public class HUDView extends View
 
         mPaint.setARGB(DEFAULT_ALPHA, DEFAULT_R, DEFAULT_G, DEFAULT_B);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(2);
+        mPaint.setStrokeWidth(3);
         canvas.drawPath(linePath, mPaint);
     }
 
@@ -854,7 +855,9 @@ public class HUDView extends View
 
         canvas.save();
 
-        float deltaGauge = mSpeedDeltaPerSecond * ACCELERATION_ROTATE_SPEED;
+        //float deltaGauge = mSpeedDeltaPerSecond * ACCELERATION_ROTATE_SPEED;
+        mSpeedDeltaPerSecondTransition = 0.8f * mSpeedDeltaPerSecondTransition + 0.2f * mSpeedDeltaPerSecond;
+        float deltaGauge = mSpeedDeltaPerSecondTransition * ACCELERATION_ROTATE_SPEED;
         if(deltaGauge < -90)
         {
             deltaGauge = -90;
