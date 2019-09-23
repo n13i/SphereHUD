@@ -13,7 +13,7 @@
         android:id="@+id/hudView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#60003010"
+        android:background="#60003030"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"/>
 
