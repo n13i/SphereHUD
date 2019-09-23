@@ -257,11 +257,15 @@ public class ListenerService extends Service implements LocationListener, Sensor
 
         if(location.hasBearing())
         {
-            mData.bearing = location.getBearing();
+            // update bearing when speed > 1.38 m/s .. about 5 km/h
+            if (location.getSpeed() > 1.38f)
+            {
+                mData.bearing = location.getBearing();
+            }
         }
         else
         {
-            mData.bearing = 0.0f;
+            mData.bearing = -1.0f;
         }
 
         mData.accuracy = location.getAccuracy();
@@ -393,9 +397,10 @@ public class ListenerService extends Service implements LocationListener, Sensor
 
         // ローパスフィルタ
         double alpha = 0.90;
+        double alphaYaw = 0.93;
         mRoll = mRoll * alpha + roll * (1 - alpha);
         mPitch = mPitch * alpha + pitch * (1 - alpha);
-        mYaw = mYaw * alpha + yaw * (1 - alpha);
+        mYaw = mYaw * alphaYaw + yaw * (1 - alphaYaw);
 
         mData.roll = mRoll - mSharedPreferences.getInt("roll_offset", 0);
         mData.pitch = mPitch - mSharedPreferences.getInt("pitch_offset", 0);
@@ -453,7 +458,7 @@ public class ListenerService extends Service implements LocationListener, Sensor
         boolean useBearing = false;
         if(mSharedPreferences.getBoolean("use_bearing", true))
         {
-            if(mData.bearing != 0.0f)
+            if(mData.bearing >= 0.0f)
             {
                 useBearing = true;
             }
