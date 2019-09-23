@@ -324,6 +324,7 @@ public class HUDView extends View
         {
             drawGauges(canvas);
         }
+        drawCenterBox(canvas);
 
         if(mNoiseAlpha > 0)
         {
@@ -604,6 +605,34 @@ public class HUDView extends View
         }
     }
 
+    private void drawCenterBox(Canvas canvas)
+    {
+        canvas.save();
+
+        // 中央の赤い線
+        int centerRadius = 10;
+        int centerFrameSize = 180;
+        int centerLineSize = 30;
+        Path centerPath = new Path();
+        centerPath.moveTo(-centerFrameSize, -centerFrameSize + centerLineSize);
+        centerPath.rLineTo(0, -(centerLineSize - centerRadius));
+        centerPath.rCubicTo(0, 0, 0, -centerRadius, centerRadius, -centerRadius);
+        centerPath.rLineTo((centerLineSize - centerRadius), 0);
+
+        Matrix translateMatrix = new Matrix();
+        translateMatrix.setRotate(90);
+
+        mPaint.setARGB(FRAME_ALPHA, 0xff, 0x60, 0x60);
+        mPaint.setStrokeWidth(2);
+        mPaint.setStyle(Paint.Style.STROKE);
+        for(int i = 0; i < 4; i++)
+        {
+            canvas.drawPath(centerPath, mPaint);
+            centerPath.transform(translateMatrix);
+        }
+        canvas.restore();
+    }
+
     private void drawGauges(Canvas canvas)
     {
         drawFrame(canvas);
@@ -667,28 +696,6 @@ public class HUDView extends View
         mPaint.setStyle(Paint.Style.FILL);
         linePath.setFillType(Path.FillType.EVEN_ODD);
         canvas.drawPath(hudSymbolPath, mPaint);
-
-        // 中央の赤い線
-        int centerRadius = 10;
-        int centerFrameSize = 180;
-        int centerLineSize = 30;
-        Path centerPath = new Path();
-        centerPath.moveTo(-centerFrameSize, -centerFrameSize + centerLineSize);
-        centerPath.rLineTo(0, -(centerLineSize - centerRadius));
-        centerPath.rCubicTo(0, 0, 0, -centerRadius, centerRadius, -centerRadius);
-        centerPath.rLineTo((centerLineSize - centerRadius), 0);
-
-        Matrix translateMatrix = new Matrix();
-        translateMatrix.setRotate(90);
-
-        mPaint.setARGB(FRAME_ALPHA, 0xff, 0x60, 0x60);
-        mPaint.setStrokeWidth(1);
-        mPaint.setStyle(Paint.Style.STROKE);
-        for(int i = 0; i < 4; i++)
-        {
-            canvas.drawPath(centerPath, mPaint);
-            centerPath.transform(translateMatrix);
-        }
 
         canvas.restore();
     }
