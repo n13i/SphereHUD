@@ -740,7 +740,7 @@ public class HUDView extends View
         for(int i = 0; i < PATH_ELEMENTS; i++)
         {
             float distance = getPathDistance(i) * radarRect.width() / RADAR_RADIUS_METER[range];
-            double bearing = Math.toRadians(getPathBearing(i) - baseBearing);
+            double bearing = -Math.toRadians(getPathBearing(i) - baseBearing);
 
             if(distance > 0)
             {
