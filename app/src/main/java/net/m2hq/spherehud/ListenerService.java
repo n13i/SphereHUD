@@ -80,6 +80,7 @@ public class ListenerService extends Service implements LocationListener, Sensor
         public double latitude;
         public double longitude;
         public boolean isFlipVertical = false;
+        public boolean isHiddenGauges = false;
     }
 
     private static ListenerData mData;
@@ -95,6 +96,7 @@ public class ListenerService extends Service implements LocationListener, Sensor
             if(null != msg.replyTo)
             {
                 mData.isFlipVertical = mSharedPreferences.getBoolean("flip_vertical", false);
+                mData.isHiddenGauges = mSharedPreferences.getBoolean("hide_gauges", false);
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("data", mData);

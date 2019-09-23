@@ -19,11 +19,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/category_compass" >
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="flip_vertical"
-            android:summary="@string/flip_vertical_summary"
-            android:title="@string/flip_vertical_title" />
         <Preference
             android:key="set_offset"
             android:summary="@string/set_offset_summary"
@@ -39,11 +34,27 @@
             android:title="@string/use_bearing_title" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/category_display" >
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="flip_vertical"
+            android:summary="@string/flip_vertical_summary"
+            android:title="@string/flip_vertical_title" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="hide_gauges"
+            android:summary="@string/hide_gauges_summary"
+            android:title="@string/hide_gauges_title" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/about" >
         <Preference
             android:key="about"
             android:summary="@string/about_summary"
             android:title="SphereHUD Version X.X" />
     </PreferenceCategory>
+
 
 </PreferenceScreen>

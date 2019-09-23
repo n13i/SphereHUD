@@ -113,6 +113,7 @@ public class HUDViewDriver implements ServiceConnection
                     mHudView.setYaw((int)(mData.yaw % 360));
 
                     mHudView.setFlipVertical(mData.isFlipVertical);
+                    mHudView.setHiddenGauges(mData.isHiddenGauges);
 
                     mHudView.invalidate();
                 }

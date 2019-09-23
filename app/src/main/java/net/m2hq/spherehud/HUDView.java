@@ -64,6 +64,7 @@ public class HUDView extends View
     //private int mPitchOffset = 0;
 
     private boolean mIsFlipVertical = false;
+    private boolean mIsHiddenGauges = false;
 
     private static final float RADAR_RADIUS_METER[] = new float[]{ 20.0f, 100.0f, 500.0f };
     private static final char RADAR_RANGE_CHAR[] = new char[]{ 'S', 'M', 'L' };
@@ -220,6 +221,11 @@ public class HUDView extends View
         mIsFlipVertical = flip;
     }
 
+    public void setHiddenGauges(boolean hide)
+    {
+        mIsHiddenGauges = hide;
+    }
+
     public void addPathElement(float distance, float bearing)
     {
         mPathElementTop = (mPathElementTop + 1) % PATH_ELEMENTS;
@@ -296,6 +302,9 @@ public class HUDView extends View
         mCanvasBorderX = width / 2 / scale;
         mCanvasBorderY = height / 2 / scale;
 
+        int canvasWidth = (int)(width / scale);
+        int canvasHeight = (int)(height / scale);
+
         canvas.save();
 
         canvas.translate(width / 2, height / 2);
@@ -310,15 +319,18 @@ public class HUDView extends View
 
         drawCompass(canvas);
         drawPitchLine(canvas);
-        drawGauges(canvas);
+        if (!mIsHiddenGauges)
+        {
+            drawGauges(canvas);
+        }
 
         if(mNoiseAlpha > 0)
         {
             Random random = new Random();
-            int noiseCountX = 3;
-            int noiseCountY = 2;
-            int noiseWidth = (int)(VIEW_WIDTH / noiseCountX);
-            int noiseHeight = (int)(VIEW_HEIGHT / noiseCountY);
+            int noiseCountX = 4;
+            int noiseCountY = 4;
+            int noiseWidth = (int)(canvasWidth / noiseCountX);
+            int noiseHeight = (int)(canvasHeight / noiseCountY);
             int noiseSrcLeft = random.nextInt(mNoiseBitmap.getWidth() - noiseWidth);
             int noiseSrcTop = (int)Math.floor(random.nextInt(mNoiseBitmap.getHeight() - noiseHeight) / 4) * 4;
             Rect srcRect = new Rect(noiseSrcLeft, noiseSrcTop, noiseSrcLeft + noiseWidth, noiseSrcTop + noiseHeight);
@@ -329,7 +341,7 @@ public class HUDView extends View
                 for(int x = 0; x < noiseCountX; x++)
                 {
                     RectF dstRect = new RectF(x * noiseWidth, y * noiseHeight, (x+1) * noiseWidth, (y+1) * noiseHeight);
-                    dstRect.offset(-VIEW_BORDER_X, -VIEW_BORDER_Y);
+                    dstRect.offset(-mCanvasBorderX, -mCanvasBorderY);
                     canvas.drawBitmap(mNoiseBitmap, srcRect, dstRect, mPaint);
                 }
             }

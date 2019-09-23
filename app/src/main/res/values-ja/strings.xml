@@ -22,4 +22,7 @@
     <string name="overlay_mode_summary">HUDを他のアプリの上に描画します(サービスとして実行されます)。再起動が必要です。</string>
     <string name="flip_vertical_title">上下反転</string>
     <string name="flip_vertical_summary">HUDを上下反転描画します。</string>
+    <string name="hide_gauges_title">ゲージを隠す</string>
+    <string name="hide_gauges_summary">スピードメーター，高度計などのゲージを表示しません。</string>
+    <string name="category_display">表示</string>
 </resources>

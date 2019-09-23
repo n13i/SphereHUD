@@ -130,4 +130,7 @@
     <string name="overlay_mode_summary">Draw HUD over other apps (Run as a service). Restart required.</string>
     <string name="flip_vertical_title">Flip vertical</string>
     <string name="flip_vertical_summary">Draw HUD vertically reversed.</string>
+    <string name="hide_gauges_title">Hide Gauges</string>
+    <string name="hide_gauges_summary">Hide gauges like speedometer, altimeter, etc.</string>
+    <string name="category_display">Display</string>
 </resources>
