@@ -27,6 +27,16 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
+        if ("net.m2hq.spherehud.action.STOP_SERVICE".equals(getIntent().getAction()))
+        {
+            if (isServiceRunning())
+            {
+                stopService(new Intent(getApplication(), HUDOverlayService.class));
+            }
+            finish();
+            return;
+        }
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean isOverlayMode = sharedPreferences.getBoolean("overlay_mode", false);
 
